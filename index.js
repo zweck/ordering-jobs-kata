@@ -1,22 +1,27 @@
 const R = require('ramda')
 
 const jobsConfig = `
+  x =>
   b => d
   a => b
   c => a
 `
-// result: c -> a -> b -> d
+// result: x -> c -> a -> b -> d
 
 const parseJobs = R.pipe(
   R.split('\n'),
   R.filter(R.identity),
   R.map(R.trim),
-  R.map(R.split(' => '))
+  R.map(R.split('=>')),
+  R.map(R.map(R.trim)),
 )
 
 const mapDeps = R.reduce((sorted, depPair) => {
   const dependsOn = R.head(depPair)
   const dependedOn = R.last(depPair)
+
+  if (!dependedOn) return [ dependsOn, ...sorted ]
+
   const dependsOnIndex = R.indexOf(dependsOn, sorted)
   const dependedOnIndex = R.indexOf(dependedOn, sorted)
   const alreadyDependsOn = R.gte(dependsOnIndex, 0)
